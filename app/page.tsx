@@ -1,3 +1,5 @@
+import { UploadDocumentsForm } from "@/components/UploadDocumentsForm";
+
 export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100dvh-73px)] gap-8 px-4 bg-background">
@@ -11,7 +13,7 @@ export default function Home() {
         
         <div className="flex justify-center">
           <div className="w-full max-w-md">
-            {/* <UploadDocumentsForm /> */}
+            <UploadDocumentsForm />
           </div>
         </div>
       </div>
