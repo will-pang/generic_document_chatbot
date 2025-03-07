@@ -6,6 +6,7 @@ from bson.objectid import ObjectId
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_community.chat_models import ChatOpenAI
 from pydantic import BaseModel
+import uuid
 # Load environment variables
 load_dotenv(override=True)
 
@@ -36,16 +37,20 @@ collection = db[f"{os.getenv("COLLECTION")}"]
 class MessageRequest(BaseModel):
     message: str
     context_from_file: str
+    session_id: str
 
 # Initialize LangChain with your API key and model
 llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), model="gpt-3.5-turbo")
 
 @app.post("/upload/")
 async def upload_file(file: UploadFile = File(...)):
+    
+    session_id = str(uuid.uuid4())
     content = await file.read()  # Read file content
 
     # Store in MongoDB
     document = {
+        "session_id": session_id,
         "filename": file.filename,
         "content_type": file.content_type,
         "content": content.decode("utf-8"),  
@@ -53,13 +58,13 @@ async def upload_file(file: UploadFile = File(...)):
     
     result = await collection.insert_one(document)
 
-    return {"message": "File uploaded successfully", "file_id": str(result.inserted_id)}
+    return {"message": "File uploaded successfully", "file_id": str(result.inserted_id), "session_id": session_id}
 
 @app.get("/retrieve/")
 async def get_latest_text():
-    text = await collection.find_one(sort=[("_id", -1)])
-    if text:
-        return {"text": text["content"]}
+    record = await collection.find_one(sort=[("_id", -1)])
+    if record:
+        return {"text": record["content"], "session_id": record["session_id"]}
     raise HTTPException(status_code=404, detail="No text found")
 
 @app.post("/chat/")

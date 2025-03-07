@@ -5,6 +5,7 @@ import { Chatbot } from "@/components/ChatWindow";
 
 export default function ChatPage() {
   const [text, setText] = useState('');
+  const [sessionId, setSessionId] = useState('');
 
   const fetchText = async () => {
     try {
@@ -13,7 +14,9 @@ export default function ChatPage() {
         throw new Error('Failed to fetch text');
       }
       const data = await response.json();
+      console.log("Data:", data)
       setText(data.text);
+      setSessionId(data.session_id);
     } catch (error) {
       console.error('Error fetching text:', error);
     }
@@ -31,7 +34,7 @@ export default function ChatPage() {
         </p>
       </div>
       <div className="w-1/2 pt-10">
-        <Chatbot initialText={text} fetchText={fetchText} />
+        <Chatbot initialText={text} fetchText={fetchText} sessionId={sessionId} />
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { useState } from "react";
 export function Chatbot(props: { 
   initialText: string;
   fetchText: () => Promise<void>;
+  sessionId: string;
 }) {
 
   const [messages, setMessages] = useState<{ sender: string; text: string }[]>([]);
@@ -18,12 +19,13 @@ export function Chatbot(props: {
 
       try {
         console.log("Initial text:", props.initialText);
+        console.log("Session ID:", props.sessionId);
         const response = await fetch("http://localhost:8000/chat/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ message: input, context_from_file: props.initialText}),
+          body: JSON.stringify({ message: input, context_from_file: props.initialText, session_id: props.sessionId}),
         });
 
         if (!response.ok) {
