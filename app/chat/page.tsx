@@ -25,13 +25,11 @@ export default function ChatPage() {
   return (
     <div className="flex h-screen">
       <div className="w-1/2 p-4">
-        <p className="text-3xl font-bold tracking-tight pb-4">📝 Document</p>
-        <p className="text-left border border-white p-5 rounded-lg overflow-auto h-full">
+        <p className="text-left p-10 overflow-auto h-full">
           {text}
         </p>
       </div>
       <div className="w-1/2 p-4">
-      <p className="text-3xl font-bold tracking-tight pb-4">💬 Chat</p>
         <p>This is the right half of the page.</p>
       </div>
     </div>

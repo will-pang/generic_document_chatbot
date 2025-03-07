@@ -27,7 +27,7 @@ body {
 
 /* Custom scrollbar styles for WebKit browsers */
 ::-webkit-scrollbar {
-  width: 2px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
