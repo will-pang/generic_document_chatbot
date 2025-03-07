@@ -10,7 +10,7 @@ export function UploadDocumentsForm() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -22,12 +22,25 @@ export function UploadDocumentsForm() {
 
     setIsLoading(true);
     try {
-      const text = await file.text();
-      // Store the text content in localStorage
-      localStorage.setItem('uploadedText', text);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch('http://localhost:8000/upload/', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error('Failed to upload text');
+      }
+
+      alert("File uploaded successfully!");
       router.push("/chat");
     } catch (error) {
-      alert("Error reading file");
+      console.error("Error uploading file:", error);
+      alert("Error uploading file");
     } finally {
       setIsLoading(false);
       if (fileInputRef.current) {
@@ -43,7 +56,7 @@ export function UploadDocumentsForm() {
         accept=".txt"
         ref={fileInputRef}
         className="hidden"
-        onChange={handleFileChange}
+        onChange={handleUpload}
       />
       <Button 
         type="button" 

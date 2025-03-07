@@ -1,6 +1,7 @@
 # python
 __pycache__/
 venv
+.env
 
 # dependencies
 /node_modules
