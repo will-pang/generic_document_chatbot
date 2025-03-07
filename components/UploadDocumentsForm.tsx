@@ -36,7 +36,7 @@ export function UploadDocumentsForm() {
         throw new Error('Failed to upload text');
       }
 
-      alert("File uploaded successfully!");
+      // alert("File uploaded successfully!");
       router.push("/chat");
     } catch (error) {
       console.error("Error uploading file:", error);
