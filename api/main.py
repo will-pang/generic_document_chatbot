@@ -5,8 +5,12 @@ import os
 from bson.objectid import ObjectId
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_community.chat_models import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.runnables.history import RunnableWithMessageHistory
 from pydantic import BaseModel
 import uuid
+from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
+
 # Load environment variables
 load_dotenv(override=True)
 
@@ -70,12 +74,42 @@ async def get_latest_text():
 @app.post("/chat/")
 async def chat_with_llm(request: MessageRequest):
     try:
-        prompt = f'''You are an assistant explaining a medical document to a patient. 
-        The medical document is: {request.context_from_file}. 
-        The patient's question is: {request.message}. If you don't know the answer, say "I don't know".'''
+        # prompt = f'''You are an assistant explaining a medical document to a patient. 
+        # The medical document is: {request.context_from_file}. 
+        # The patient's question is: {request.message}. If you don't know the answer, say "I don't know".'''
 
         # Use LangChain to get a response from the LLM
-        response = llm.invoke(prompt)
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", f'''You are an assistant explaining a medical document to a patient. 
+                 The medical document is: {request.context_from_file}\n
+                 If you don't know the answer, say "I don't know".'''),
+                MessagesPlaceholder(variable_name="history"),
+                ("human", "{question}"),
+            ]
+        )
+
+        chain = prompt | ChatOpenAI()
+
+        chain_with_history = RunnableWithMessageHistory(
+            chain,
+            lambda session_id: MongoDBChatMessageHistory(
+                session_id=request.session_id,
+                connection_string=os.getenv("MONGO_URI"),
+                database_name=f"{os.getenv("DB")}",
+                collection_name=f"{os.getenv("CONVERSATIONAL_HISTORY_COLLECTION")}"
+            ),
+            input_messages_key="question",
+            history_messages_key="history",
+        )
+
+        config = {"configurable": {"session_id": f"{request.session_id}"}}
+
+        try:
+            response = chain_with_history.invoke({"question": request.message}, config=config)
+        except Exception as e:
+            print(e)
+            raise HTTPException(status_code=500, detail=str(e))
         return {"response": response}
     
     except Exception as e:
