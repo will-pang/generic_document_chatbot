@@ -6,23 +6,42 @@ export function Chatbot() {
   const [messages, setMessages] = useState<{ sender: string; text: string }[]>([]);
   const [input, setInput] = useState("");
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (input.trim()) {
       setMessages([...messages, { sender: "User", text: input }]);
       setInput("");
-      // Simulate a bot response
-      setTimeout(() => {
+
+      try {
+        const response = await fetch("http://localhost:8000/chat/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message: input }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch response from server");
+        }
+
+        const data = await response.json();
+        
+        // Assuming the response is an object with a 'response' key containing the text
+        const botResponse = data.response.content; // Adjust this line based on your actual response structure
+
         setMessages((prevMessages) => [
           ...prevMessages,
-          { sender: "Bot", text: "This is a bot response." },
+          { sender: "Bot", text: botResponse },
         ]);
-      }, 1000);
+      } catch (error) {
+        console.error("Error fetching response:", error);
+      }
     }
   };
 
   return (
     <div className="flex flex-col h-screen">
-        <div className="flex mt-4">
+      <div className="flex mt-4">
         <input
           type="text"
           value={input}
@@ -40,7 +59,7 @@ export function Chatbot() {
       <div className="flex-grow overflow-auto p-4 rounded-lg shadow-md">
         {messages.map((message, index) => (
           <div key={index} className={`mb-2 ${message.sender === "User" ? "text-right" : "text-left"}`}>
-            <span className={`inline-block p-2 rounded-lg ${message.sender === "User" ? "bg-blue-500 text-white" : "bg-gray-300 text-black"}`}>
+            <span className={`inline-block p-2 rounded-lg ${message.sender === "User" ? "bg-gray-700 text-white" : "bg-gray-300 text-black"}`}>
               {message.text}
             </span>
           </div>

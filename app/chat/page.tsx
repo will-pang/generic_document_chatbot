@@ -31,7 +31,7 @@ export default function ChatPage() {
         </p>
       </div>
       <div className="w-1/2 pt-10">
-        <Chatbot />
+        <Chatbot/>
       </div>
     </div>
   );

@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 import os
 from bson.objectid import ObjectId
 from fastapi.middleware.cors import CORSMiddleware
+from langchain_community.chat_models import ChatOpenAI
+from pydantic import BaseModel
 # Load environment variables
 load_dotenv(override=True)
 
@@ -30,6 +32,13 @@ client = AsyncIOMotorClient(os.getenv("MONGO_URI"))
 db = client[f"{os.getenv("DB")}"]
 collection = db[f"{os.getenv("COLLECTION")}"]
 
+# Define a request model
+class MessageRequest(BaseModel):
+    message: str
+
+# Initialize LangChain with your API key and model
+llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), model="gpt-3.5-turbo")
+
 @app.post("/upload/")
 async def upload_file(file: UploadFile = File(...)):
     content = await file.read()  # Read file content
@@ -51,3 +60,12 @@ async def get_latest_text():
     if text:
         return {"text": text["content"]}
     raise HTTPException(status_code=404, detail="No text found")
+
+@app.post("/chat/")
+async def chat_with_llm(request: MessageRequest):
+    try:
+        # Use LangChain to get a response from the LLM
+        response = llm.invoke(request.message)
+        return {"response": response}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
