@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { Chatbot } from '@/components/ChatWindow';
 
 export default function ChatPage() {
   const [text, setText] = useState('');
@@ -24,13 +25,13 @@ export default function ChatPage() {
 
   return (
     <div className="flex h-screen">
-      <div className="w-1/2 p-4">
-        <p className="text-left p-10 overflow-auto h-full">
+      <div className="w-1/2 pt-14 pr-10">
+        <p className="text-left p-0 overflow-auto h-full">
           {text}
         </p>
       </div>
-      <div className="w-1/2 p-4">
-        <p>This is the right half of the page.</p>
+      <div className="w-1/2 pt-10">
+        <Chatbot />
       </div>
     </div>
   );

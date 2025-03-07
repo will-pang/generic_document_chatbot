@@ -1,4 +1,5 @@
 import { UploadDocumentsForm } from "@/components/UploadDocumentsForm";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -15,6 +16,14 @@ export default function Home() {
           <div className="w-full max-w-md">
             <UploadDocumentsForm />
           </div>
+          <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6 border border-white">
+                    <a
+                      href="https://www.theedigital.com/blog/what-is-im-feeling-lucky-on-google"
+                      target="_blank"
+                    >
+                      <span>I'm Feeling Lucky</span>
+                    </a>
+          </Button>
         </div>
       </div>
     </div>
