@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 
-export function Chatbot() {
+
+export function Chatbot(props: { 
+  initialText: string;
+  fetchText: () => Promise<void>;
+}) {
+
   const [messages, setMessages] = useState<{ sender: string; text: string }[]>([]);
   const [input, setInput] = useState("");
 
@@ -12,12 +17,13 @@ export function Chatbot() {
       setInput("");
 
       try {
+        console.log("Initial text:", props.initialText);
         const response = await fetch("http://localhost:8000/chat/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ message: input }),
+          body: JSON.stringify({ message: input, context_from_file: props.initialText}),
         });
 
         if (!response.ok) {

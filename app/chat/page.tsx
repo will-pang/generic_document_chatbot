@@ -1,25 +1,25 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { Chatbot } from '@/components/ChatWindow';
+import { useEffect, useState } from "react";
+import { Chatbot } from "@/components/ChatWindow";
 
 export default function ChatPage() {
   const [text, setText] = useState('');
 
-  useEffect(() => {
-    const fetchText = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/retrieve/');
-        if (!response.ok) {
-          throw new Error('Failed to fetch text');
-        }
-        const data = await response.json();
-        setText(data.text);
-      } catch (error) {
-        console.error('Error fetching text:', error);
+  const fetchText = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/retrieve/');
+      if (!response.ok) {
+        throw new Error('Failed to fetch text');
       }
-    };
+      const data = await response.json();
+      setText(data.text);
+    } catch (error) {
+      console.error('Error fetching text:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchText();
   }, []);
 
@@ -31,7 +31,7 @@ export default function ChatPage() {
         </p>
       </div>
       <div className="w-1/2 pt-10">
-        <Chatbot/>
+        <Chatbot initialText={text} fetchText={fetchText} />
       </div>
     </div>
   );

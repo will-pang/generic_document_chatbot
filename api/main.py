@@ -35,6 +35,7 @@ collection = db[f"{os.getenv("COLLECTION")}"]
 # Define a request model
 class MessageRequest(BaseModel):
     message: str
+    context_from_file: str
 
 # Initialize LangChain with your API key and model
 llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), model="gpt-3.5-turbo")
@@ -64,8 +65,13 @@ async def get_latest_text():
 @app.post("/chat/")
 async def chat_with_llm(request: MessageRequest):
     try:
+        prompt = f'''You are an assistant explaining a medical document to a patient. 
+        The medical document is: {request.context_from_file}. 
+        The patient's question is: {request.message}. If you don't know the answer, say "I don't know".'''
+
         # Use LangChain to get a response from the LLM
-        response = llm.invoke(request.message)
+        response = llm.invoke(prompt)
         return {"response": response}
+    
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
