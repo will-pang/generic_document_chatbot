@@ -25,18 +25,15 @@ export function UploadDocumentsForm() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch('http://localhost:8000/upload/', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/upload/`, {
         method: 'POST',
         body: formData,
       });
-
-      const data = await response.json();
 
       if (!response.ok) {
         throw new Error('Failed to upload text');
       }
 
-      // alert("File uploaded successfully!");
       router.push("/chat");
     } catch (error) {
       console.error("Error uploading file:", error);

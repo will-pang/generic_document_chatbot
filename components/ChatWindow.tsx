@@ -20,7 +20,7 @@ export function Chatbot(props: {
       try {
         console.log("Initial text:", props.initialText);
         console.log("Session ID:", props.sessionId);
-        const response = await fetch("http://localhost:8000/chat/", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/chat/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -18,14 +18,9 @@ load_dotenv(override=True)
 app = FastAPI()
 
 # Allow requests from your frontend
-origins = [
-    "http://10.0.0.34:3000",  # Your frontend URL
-    "http://localhost:3000",  # Local frontend (if needed)
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Allow only specified origins
+    allow_origins=["*"],  # Allow only specified origins
     allow_credentials=True,
     allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers

@@ -9,7 +9,7 @@ export default function ChatPage() {
 
   const fetchText = async () => {
     try {
-      const response = await fetch('http://localhost:8000/retrieve/');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/retrieve/`);
       if (!response.ok) {
         throw new Error('Failed to fetch text');
       }
