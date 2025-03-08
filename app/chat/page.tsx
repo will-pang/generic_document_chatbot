@@ -14,7 +14,6 @@ export default function ChatPage() {
         throw new Error('Failed to fetch text');
       }
       const data = await response.json();
-      console.log("Data:", data)
       setText(data.text);
       setSessionId(data.session_id);
     } catch (error) {
